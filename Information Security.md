@@ -80,3 +80,11 @@ SL(M,\mathcal{A})= log_{1/2}sup_{A \in \mathcal{A}}P[S_{\mathcal{A}}; A,M] \spac
 $$
 But typically a mechanism is designed to aim of being secure against widest possible class of attacks.
 So we said a *security mechanism* is $\epsilon$-uncoditional security against class $\mathcal{A}$ of attacks for some $\epsilon > 0$ if $P[S_{\mathcal{A}};A,M] \leq \epsilon, \forall A \in \mathcal{A}$ all attacks in $\mathcal{A}$ succeed against $M$ with probability no more than $\epsilon$ 
+A *security mechanism* is said to offer ($\epsilon, T_0$-*computational security*) against a class $\mathcal{A}$ of attacks, for some $\epsilon > 0, T_0 > 0$ if $P[S_{\mathcal{A}}\cap \{T_A \leq T_0 \};A,M]\leq \epsilon, \space \space \space \forall A \in \mathcal{A}$ 
+that is all attacks in $\mathcal{A}$ succeed against $M$ within time $T_0$ with probability no more than $\epsilon$. The last definition can also be written as $P[S_{\mathcal{A}};A,M]\leq \epsilon \space, \space \forall A \in \mathcal{A}$ such that $T_A \leq T_0$ surely. That is all attacks in $\mathcal{A}$ that take up to $T_0$ time succeed against $M$ with probability no more than $\epsilon$ .
+![[Pasted image 20260314200451.png]]
+The problem with the formulation is that the definition depends on the state of *technological maturity*. So we allow the mechanism to depend on a *security parameter* $n \in \mathbb{N}$ (e.g. length of crypto keys, number of rounds in a iterative protocol...) that can be **increased at will**
+- The legitimate operation is *still feasible* -> depends on $n$ polyomially
+- The adversary operation soon become *infeasible* -> superpolynomial complexity
+A sequence of security mechanisms $\{M_n\}$ indexed by some parameter $n \in \mathbb{N}$ is said to offer *asymptotic computational security* against a class $\mathcal{A}$ of attacks if:
+1. $
