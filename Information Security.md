@@ -3,7 +3,7 @@
 ## Security goals
 
 Desirable features of communications and networks
-- **Confidentiality***: Information is available to intended receiver only
+- **Confidentiality**: Information is available to intended receiver only
 - ***Integrity***: Information is received exactly as sent
 - **Availability**: Service is always available even if someone intends to disturbt the network
 - **Accountability**: It is always possible to identify who is responsible for any information event
@@ -87,4 +87,17 @@ The problem with the formulation is that the definition depends on the state of 
 - The legitimate operation is *still feasible* -> depends on $n$ polyomially
 - The adversary operation soon become *infeasible* -> superpolynomial complexity
 A sequence of security mechanisms $\{M_n\}$ indexed by some parameter $n \in \mathbb{N}$ is said to offer *asymptotic computational security* against a class $\mathcal{A}$ of attacks if:
-1. $
+1. $\exists$ polynomial $p(\cdot)$ such that $$\forall n \space\space,\space\space T_{M_{n}}\leq p(n)$$
+2. $\forall q(\cdot),s(\cdot)$ polynomials, and sequence of attacks $\{A_n\} \subset \mathcal{A} \space, \space \exists n_0$ such that $$\forall n > n_0 , P[S_a \cap \{T_{A_{n}} \leq q(n)\};A_n,M_n] > \frac{1}{s(n)}$$
+*The value of $n_0$ dependes on $q(\cdot), s(\cdot)$ and $\{A_n\}$* 
+It is also said that the probability of the attack succeeding in polynomial time vanishes super polynomially so that it is *asymptotically negligible*
+![[Screenshot 2026-03-15 alle 16.36.06.png]]
+![[Screenshot 2026-03-15 alle 16.36.40.png]]
+A sequence of security mechanisms $\{M_n\}$ indexed by some parameter $n \in \mathbb{N}$ is said to offer *asymptotic unconditional security* against a class $\mathcal{A}$ of attacks, if $$\lim_{n \to \infty}P[S_{\mathcal{A}}; A_n, M_n] = 0 \space , \space \forall A_n \in \mathcal{A}$$
+that is all the sequences of attacks in $\mathcal{A}$ succeed against the corresponding $M_n$ with probability that vanishes as $n$ grows.
+
+|            | unconditional                                                                            | computational                                                                                                                                                        |
+| ---------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| finite     | $$\forall A \in \mathcal{A} $$ $$\newline \space P[S_{\mathcal{A}}; A,M] \leq \epsilon$$ | $$\forall A \in \mathcal{A}$$ $$P[S_{\mathcal{A}}\cap\{T_A\leq T_0\};A,M]\leq \epsilon$$                                                                             |
+| asymptotic | $$\forall \{A_n \in \mathcal{A}\}$$ $$\lim_{n \to \infty} P[S_\mathcal{A};A_n,M_n] = 0$$ | $$\forall\{A_n \in \mathcal{A}\}, \space \forall q(\cdot),s(\cdot), \space \forall n>n_0$$ $$P[S_{\mathcal{A}}\cap\{T_{A_{n}}\leq q(n)\};A_n,M_n] < \frac{1}{s(n)}$$ |
+
