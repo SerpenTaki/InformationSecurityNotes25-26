@@ -100,4 +100,52 @@ that is all the sequences of attacks in $\mathcal{A}$ succeed against the corres
 | ---------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | finite     | $$\forall A \in \mathcal{A} $$ $$\newline \space P[S_{\mathcal{A}}; A,M] \leq \epsilon$$ | $$\forall A \in \mathcal{A}$$ $$P[S_{\mathcal{A}}\cap\{T_A\leq T_0\};A,M]\leq \epsilon$$                                                                             |
 | asymptotic | $$\forall \{A_n \in \mathcal{A}\}$$ $$\lim_{n \to \infty} P[S_\mathcal{A};A_n,M_n] = 0$$ | $$\forall\{A_n \in \mathcal{A}\}, \space \forall q(\cdot),s(\cdot), \space \forall n>n_0$$ $$P[S_{\mathcal{A}}\cap\{T_{A_{n}}\leq q(n)\};A_n,M_n] < \frac{1}{s(n)}$$ |
+|            |                                                                                          |                                                                                                                                                                      |
+# Source distinguishers
+![[Pasted image 20260317114708.png]]
+A **distinguisher** between two random variables $x_0$ and $x_1$ is a system $D$ that is allowed to observe a realization of $y$ without knowing in advance if $b=0$ or $b=1$ and should then guess which one holds
+- $x_0$ and $x_1$ are characterized by their [^1]PMDs $p_{x_{0}}, p_{x_{1}}$
+- a *deterministic* $D$ is composed of a decision function $g \space : \space \mathcal{Y} \rightarrow \{ 0,1\},$ i.e. $b=g(y)$ 
+- more generally, a *probabilistic* $D$ is characterized by a conditional PMDs $P_{b'|y}(\cdot|\cdot)$ 
+[^1]: Probability Mass distribution
 
+The performance of a *distinguisher* $D$ is given by the pair of *correct decision probabilities* $$(P_{b'|b}(0|0), P_{b'|b}(1|1))$$
+or a complementary by the pair of *error probabilities* $$(P_{b'|b}(1|0),P_{b'|b}(0|1))$$
+The *distingushing advantage* of $D$ between $x_0$ and $x_1$ is 
+$$adv_D(x_0,x_1)= |P_{b'|b}(0|0)-P_{b'|b}(0|1) = |P_{b'|b}(1|1)-P_{b'|b}(1|0)|$$
+$$= |P_{b'|b}(0|0)+P_{b'|b}(1|1)-1|=|1-P_{b'|b}(1|0)-P_{b'|b}(0|1)|$$
+		                 ![[Pasted image 20260317115936.png]]
+> [!Warning] NB
+> - for a **perfect** distinguisher $adv_D(x_0,x_1) = 1$
+> - for a **dumb** distinguisher $adv_D(x_0,x_1) = 0$
+#### Properties
+For any [^1]rvs $x,y,z$ and any distinguisher $D$ between them, the following hold:
+- **symmetry**: $adv_D(x,y) = adv_D(y,x)$
+- **bounds**: $0 \leq adv_D(x,y) \leq 1$ 
+- **Triangular inequality**: $|adv_D(x,z)-adv_D(y,z)| \leq adv_D(x,y) \leq adv_D(x,z)+adv_D(y,z)$
+[^1]: Random variables
+## Unconditional indistinguishability
+It is not always possible to find a perfect distinguisher:
+> [!Abstract] (unconditional, finite)
+> 2 variables $x_0$ and $x_1$ are said to be $\epsilon$-*unconditionally indistinguishable* if for any distinguisher $D$ , it is $adv_D(x_0,x_1) \leq \epsilon$
+
+![[Pasted image 20260317121345.png]]
+### Performance of unconditional distinguishers
+For a deterministic distinguisher $$D \space : \space b'=g(y), p(0|1) = \sum_{a \in g^{-1}(0)} p_{x_{1}}(a) \space , \space \space p(1|0) = \sum_{a \in g^{-1}(1)}p_{x_0}(a)$$
+![[Pasted image 20260317121844.png]]
+
+> [!Abstract] Optimal unconditional distinguisher
+> The distinguisher that maximizes $adv_D(x_0,x_1)$ is the **maximum likelihood (ML)** estimator of $b$ from the observation of $y$
+> $$g_{ML}(a) = \begin{equation}
+\left\{\begin{split}
+ 0 \space , \space if p_{x_0}(a) \geq p_{x_1}(a)\\
+1 \space , \space if p_{x_0}(a) < p_{x_1}(a) \\ 
+\end{split}\right.
+\end{equation}$$
+it is often *computationally infeasible*
+## Total variation distance
+
+> [!Abstract] Total variation distance
+> The **Total variation distance** between 2 rvs $x_0,x_1$ with alphabet $\mathcal{A}$ is defined as: $$$$
+
+$$$$
