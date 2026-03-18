@@ -100,7 +100,6 @@ that is all the sequences of attacks in $\mathcal{A}$ succeed against the corres
 | ---------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | finite     | $$\forall A \in \mathcal{A} $$ $$\newline \space P[S_{\mathcal{A}}; A,M] \leq \epsilon$$ | $$\forall A \in \mathcal{A}$$ $$P[S_{\mathcal{A}}\cap\{T_A\leq T_0\};A,M]\leq \epsilon$$                                                                             |
 | asymptotic | $$\forall \{A_n \in \mathcal{A}\}$$ $$\lim_{n \to \infty} P[S_\mathcal{A};A_n,M_n] = 0$$ | $$\forall\{A_n \in \mathcal{A}\}, \space \forall q(\cdot),s(\cdot), \space \forall n>n_0$$ $$P[S_{\mathcal{A}}\cap\{T_{A_{n}}\leq q(n)\};A_n,M_n] < \frac{1}{s(n)}$$ |
-|            |                                                                                          |                                                                                                                                                                      |
 # Source distinguishers
 ![[Pasted image 20260317114708.png]]
 A **distinguisher** between two random variables $x_0$ and $x_1$ is a system $D$ that is allowed to observe a realization of $y$ without knowing in advance if $b=0$ or $b=1$ and should then guess which one holds
@@ -146,6 +145,120 @@ it is often *computationally infeasible*
 ## Total variation distance
 
 > [!Abstract] Total variation distance
-> The **Total variation distance** between 2 rvs $x_0,x_1$ with alphabet $\mathcal{A}$ is defined as: $$$$
+> The **Total variation distance** between 2 rvs $x_0,x_1$ with alphabet $\mathcal{A}$ is defined as: $$d_V(x_0,x_1) = sup_{S\subset A}(P[x_0 \in S]-P[x_1\in S]) = sup_{S \subset A} \sum_{a \in S} [p_{x_0}(a)-p_{x_1}(a)]$$
+> the supremum is achieved with $$S^*=\{a \in \mathcal{A} \space : \space p_{x_0}(a) > p_{x_1}(a)\}$$ and can be computed as  $$d_V(x_0,x_1) = \frac{1}{2}\sum_{a\in S^*}[p_{x_0}(a)-p_{x_1}(a)] + \frac{1}{2}\sum_{a\notin S^*}[p_{x_1}(a)-p_{x_0}(a)] = \frac{1}{2}\sum_{a \in \mathcal{A}} | p_{x_0}(a)-p_{x_1}(a)| $$
 
-$$$$
+> [!info] Relationship with distinguishability
+>$$sup_D adv_D(x_0,x_1) = sup_D |P_{b'|b}(0|0)-P_{b'|b}(0|1)| = sup_{g:\mathcal{A} \rightarrow \{ 0,1 \}}|P[x_0 \in g^{-1}(0)]-P[x_1 \in g^{-1}(0)]| $$
+> $$= \sum_{a \in g^{-1}_{ML}(0)} p_{x_0}(a)-p_{x_1}(a) = d_V(x_0,x_1)$$
+> Thus $d_V(x_0,x_1) < \epsilon  \iff x_0,x_1$ are $\epsilon$-*unconditionally indistinguishable* 
+#### Properties
+- **Symmetry** $d_V(x,y) = d_V(y,x)$
+- **Positivity** $d_V(x,y)\geq 0$ and $d_V(x,y)=0 \iff p_x =p_y$
+- **Triangular inequality** $|d_V(x,y) - d_V(y,z)| \leq d_V(x,y) \leq d_V(x,z) + d_V(y,z)$
+- **rv difference probability** if $d_V(x,y) = \epsilon$ there exists a joint distribution $p_{xy}$ having $p_x$ and $p_y$ as its marginals, such that $P[x \neq y] \leq \epsilon$ 
+- **monotonicity** $d_v(x,y) \leq d_v((x,z),(y,v))$ for any rvs $x,y,z,v$
+- **subadditivity with independent rvs**: if $x_1,x_2$ are independent and so are $y_1,y_2$ then $d_V((x_1,x_2),(y_1,y_2)) \leq d_v(x_1,y_1)+d_V(x_2,y_2)$
+## Asymptotic indistinguishability
+> [!abstract] (unconditional, asymptotic)
+> Two sequences of random variables (or vectors) $x_{0,n}$ and $x_{1,n}$ are said to be *unconditionally indistinguishable in the asymptotic formulation* for any of distinguishers $D_n$ 
+> $$lim_{n \rightarrow \infty} adv_{D_n}(x_{0,n},x_{1,n}) = 0$$
+
+It is easy to relate this notion to the total variation distance as
+
+> [!Tip] Proposition
+> Two sequences of random variables (or vectors) $x_{0,n}$ and $x_{1,n}$ are *unconditionally indistinguishable in the asymptotic* if and only if $$lim_{n \rightarrow \infty} d_V(x_{0,n},x_{1.n}) = 0$$
+
+## Computational indistinguishability
+Sometimes even if a good distinguisher exist in principe, it may not be possible to find a computational efficient one
+>[!Abstract] Definition (computational, finite)
+>$x_0$ and $x_1$ are said to be $(\epsilon , T_0)$-*computationally indistinguishable* if for any distinguisher $D$ with complexity $T_D \leq T_0$ it $adv_D(x_0,x_1) \leq \epsilon$
+
+We can also introduce the asymptotic version
+>[!Abstract] (computational, asymptotic)
+>Two sequences of random variables (or vectors) $x_{0.n}$ and $x_{1.n}$ are said to be *computationally indistinguishable in the asymptotic formulation* if for any polynomials $p(\cdot), q(\cdot)$ and any sequence of distinguishers $D_n$ with complexity $T_{D_n} \leq p(n)$, there exist a $n_{p,q}$ such that $adv_{D_n}(x_{0.n},x_{1.n}) \leq 1/q(n), \space \forall n > n_{p,q}$
+
+![[Pasted image 20260317192006.png]]
+![[Pasted image 20260317192035.png]]
+## System distinguishers
+Consider 2 *probabilistic systems* $S_0$ and $S_1$ where:
+- $S_0$ is characterized by the conditional PMD $p_{y_0|x}$
+- $S_1$ is characterized by $p_{y_1}|x$
+A *Distinguisher* between $S_0$ and $S_1$ is third system $D$ that is allowed to interact with $S_b$ without knowing in advance if $b=0$ of $b=1$ and
+- can feed any input $x$ to $S_b$
+- can observe the corresponding output $y$
+- should then guess whether $b=0$ or $b=1$
+$D$ is composed of:
+- an *input selection* strategy $p_x$ (possibily adaptive, $p_{x|y}$)
+- a decision function $g : \mathcal{X} \times \mathcal{Y} \rightarrow \{ 0,1\}$ i.e. $b' = g(x,y)$
+- or a probabilistic decision rule with conditional probabilities $P_{b'}
+![[Pasted image 20260317193839.png]]
+### Distinguisher performance
+The performance of a distinguisher $D$ is given by the pair of correct decision (*or complementary error*) probabilities $$(p_{b'|b}(0|0),p_{b'|b}(1|1)) \space \space, \space \space (p_{b'|b}(1|0),p_{b'|b}(0|1))$$
+The *distinguish advantage* of $D$ between $S_0$ and $S_1$ is $$adv_D(S_0,S_1) = |p_{b'|b}(0|0)-p_{b'|b}(0|1)| = |p_{b'|b}(1|1)-p_{b'|b}(1|0)|$$
+$$= |p_{b'|b}(0|0)+p_{b'|b}(1|1)-1| = |1-p_{b'|b}(1|0),p_{b'|b}(0|1)|$$
+- for a **perfect** distinguisher $adv_D(S_0,S_1)=1$
+- for a **dumb** distinguisher $adv_D(S_0.S_1)=0$
+## Unconditional indistinguishability
+>[!Abstract] (unconditional, finite)
+>Two systems $S_0$ and $S_2$ are said to be $\epsilon$-*unconditionally indistinguishable* if for any distinguisher $D$ it is $adv_D(S_0,S_1) \leq \epsilon$
+
+>[!Abstract] (computational, asymptotic)
+>Two sequences of systems $S_{0,n}$ and $S_{1,n}$ are said to be *unconditionally indistinguishable in the asymptotic formulation* if for any sequence  of distinguishers $D_n$  $$lim_{n \rightarrow \infty} adv_{D_n}(S_{0,n},S_{1_n}) = 0$$
+
+## Relationship with total variation distance
+For two systems $S_0,S_1$ with input $x$ and outputs $y_0,y_1$ respectively we can relate their unconditional distinguish-ability to the total variation distance of the joint input-output pairs $$sup_D adv_D(S_0,S_1) = sup_{p_x}sup_g|P[(x,y_0) \in g^{-1}(0)]-P[(x,y_1)\in g^{-1}(0)]|$$
+$$=sup_{p_x}|P[(x,y_0)\in g^{-1}_{ML}(0)]-P[(x,y_1)\in g^{-1}_{ML}(0)]|=sup_{p_x}d_V((x,y_0),(x,y_1))$$
+Alternatively we can relate it to the total variation distance between conditional distribution of the outputs given the same input value
+$$sup_D adv_D (S_0,S_1) = sup_{p_x} \frac{1}{2} \sum_{a,b} |p_{y_0|x}(b|a)p_x(a)-p_{y_1|x}(b|a)p_x(a)|$$
+$$=sup_{p_x} \frac{1}{2} \sum_{a} p_x(a) \sum_b |p_{y_0|x}(b|a)-p_{y_1|x}(b|a)|$$
+$$=sup_{a} \frac{1}{2} \sum_b |p_{y_0|x}(b|a)-p_{y_1|x}(b|a)|=sup_a d_V(p_{y_0|x=a},p_{y_1|x=a})$$
+## Computational indistinguishability
+>[!Abstract] (computational, finite)
+>$S_0$ and $S_1$ are said to be $(\epsilon , T_0)$-*computationally indistinguishable* if for any distinguisher $D$ with complexity $T_D \leq T_0$ it is $adv_D(S_0,S_1) \leq \epsilon$
+>
+
+>[!Abstract] (computational, finite)
+> Two sequence of systems $S_{0,n}$ and $S_{1,n}$ are said to be *computationally indistinguishable in the asymptotic formulation* if, for any polynomials $p(\cdot),q(\cdot)$ and any sequence of distinguishers $D_n$ with complexity $T_{D_n} \leq p(n)$,  $$\exists n_0 \space \space : \space \space adv_{D_n}(S_{0,n},S_{1,n} \leq \frac{1}{q(n)} \space \space \space, \space \forall n>n_0$$
+>the value of $n_0$ depends on $q(\cdot), s(\cdot)$ and $\{D_n\}$
+> $$lim_{n \rightarrow \infty}q(n)adv_{D_n}(S_{0,n},S_{1,n}) = 0$$
+### Ideal counterparts of mechanisms
+We define the *security measure* for a mechanism $M$ in terms of indistinguishability from its *ideal counterpart* $M^*$
+The ideal counterpart of a mechanism is another (possibly unrealistic) mechanism $M^*$ that:
+- provides the same security service as $M$ in an ideal manner
+- has the same interfaces as $M$
+>[!Example]
+>| **Real-world mechanism** $M$ | **ideal counterpart** $M^*$                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------- |
+| secure random generator      | source of uniform independent symbols                                         |
+| cryptographic key agreement  | 2 identical copies of random uniform string, garbage to the eavesdropper      |
+| encryption/decryption        | identical copy of message to legitimate receiver, garbage to the eavesdropper |
+## Unconditional security definitions
+>[!Abstract] (unconditional, finite)
+>A mechanism $M$ is said to be $\epsilon$-*unconditionally secure* if it is $\epsilon$-*unconditionally indistinguishable* from its ideal counterpart $M^*$ 
+
+>[!Abstract] (unconditional, asymptotic)
+>A sequence of mechanisms $\{M_n\}, n \in \mathbb{N}$ is said to be *unconditional secure* in the asymptotic formulation if it is *unconditionally indistiguishable* from its ideal counterpart $\{M^*_n\}$ is the asymptotic formulation
+## Computational security definitions
+>[!Abstract] (conditional, finite)
+>A mechanism $M$ is said to be $\epsilon$-*conditionally secure* if it is $\epsilon$-*conditionally indistinguishable* from its ideal counterpart $M^*$ 
+
+>[!Abstract] (conditional, asymptotic)
+>A sequence of mechanisms $\{M_n\}, n \in \mathbb{N}$ is said to be *asymptotically computationally secure* if:
+>- $\exists$ polynomial $p(\cdot)$ such that $\forall n,T_{M_n} \leq p(n)$
+>- the sequence $\{M_n\}$ is *computationally indistiguishable* from its ideal counterpart $\{M^*_n\}$ in the asymptotic formulation
+## Multiple ideal counterparts
+For some mechanisms $M$ there may be multiple $M^*$ (each characterized by a different $p_{y^*|x}$) all equally valid, forming a set $\mathcal{M}^*$ of ideal counterparts.
+Then the security definitions should be revised as
+>[!Abstract] (unconditional, finite)
+>A mechanism $M$ is said to be $\epsilon$-*unconditionally secure* if it is $\epsilon$-*unconditionally indistiguishable* from at least one ideal counterpart $M^* \in \mathcal{M}^*$
+>
+
+and *similarly for the asymptotic* and the *computational* security definitions. Observe that $\epsilon$-unconditional security can then be written via the relationship with total variation distance as:
+$$ min_{M^*\in\mathcal{M}^*} sup_D adv_D(M,M^*) \leq \epsilon \iff min_{P_{y^*|x}\in \mathcal{M}^*} max_{p_x} d_V ((x,y), (x,y^*)) \leq \epsilon$$
+$$ \iff min_{P_{y^*|x}\in \mathcal{M}^*} max_a d_V (p_{y|x=a}, p_{y^*|x=a}) \leq \epsilon$$
+
+|            | unconditional                                                                     | computational                                                                                                                             |
+| ---------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| finite     | $\forall D$ distinguisher $$adv_D(M,M^*)\leq \epsilon$$                           | $\forall D$ with $T_D \leq T_0$ $$adv_D(M,M^*) \leq \epsilon$$                                                                            |
+| asymptotic | $\forall \{D_n\}$ sequence $$lim_{n \rightarrow \infty}adv_{Ð_n}(M_n,M^*_n) = 0$$ | $\forall q(\cdot), s(\cdot)$ polynomials, $\forall \{D_n\} : T_{D_n} \leq q(n)$ $$lim_{n \rightarrow \infty}s(n) adv_{D_n}(M_n,M^*_n)=0$$ |
