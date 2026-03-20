@@ -102,7 +102,7 @@ that is all the sequences of attacks in $\mathcal{A}$ succeed against the corres
 | asymptotic | $$\forall \{A_n \in \mathcal{A}\}$$ $$\lim_{n \to \infty} P[S_\mathcal{A};A_n,M_n] = 0$$ | $$\forall\{A_n \in \mathcal{A}\}, \space \forall q(\cdot),s(\cdot), \space \forall n>n_0$$ $$P[S_{\mathcal{A}}\cap\{T_{A_{n}}\leq q(n)\};A_n,M_n] < \frac{1}{s(n)}$$ |
 # Source distinguishers
 ![[Pasted image 20260317114708.png]]
-A **distinguisher** between two random variables $x_0$ and $x_1$ is a system $D$ that is allowed to observe a realization of $y$ without knowing in advance if $b=0$ or $b=1$ and should then guess which one holds
+A **distinguisher** between two random variables $x_0$ and $x_1$ is a system $D$ that is allowed to observe a realization of $y$ without knowing in advance if $b=0$ or $b=1$ and should then guess which one holds. #distinguisher
 - $x_0$ and $x_1$ are characterized by their [^1]PMDs $p_{x_{0}}, p_{x_{1}}$
 - a *deterministic* $D$ is composed of a decision function $g \space : \space \mathcal{Y} \rightarrow \{ 0,1\},$ i.e. $b=g(y)$ 
 - more generally, a *probabilistic* $D$ is characterized by a conditional PMDs $P_{b'|y}(\cdot|\cdot)$ 
@@ -262,3 +262,92 @@ $$ \iff min_{P_{y^*|x}\in \mathcal{M}^*} max_a d_V (p_{y|x=a}, p_{y^*|x=a}) \leq
 | ---------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | finite     | $\forall D$ distinguisher $$adv_D(M,M^*)\leq \epsilon$$                           | $\forall D$ with $T_D \leq T_0$ $$adv_D(M,M^*) \leq \epsilon$$                                                                            |
 | asymptotic | $\forall \{D_n\}$ sequence $$lim_{n \rightarrow \infty}adv_{Ð_n}(M_n,M^*_n) = 0$$ | $\forall q(\cdot), s(\cdot)$ polynomials, $\forall \{D_n\} : T_{D_n} \leq q(n)$ $$lim_{n \rightarrow \infty}s(n) adv_{D_n}(M_n,M^*_n)=0$$ |
+# Composable Security Definitions
+## Security analysis
+A **security analysis** is a method to establish the security of a mechanism $M$ by:
+- considering several attacks on $M$ 
+- model the mechanism $M$ and each attack $A$
+- estimate the success probability $P[S_A;A,M]$
+It provides no absolute guarantees that all possible attacks have been considered
+## Security proofs
+A **security proof** for a mechanism $M$ is a mathematical derivation that allows to establish bounds on distinguishability or attack success probability. It requires:
+- a precise and complete adversarial / #distinguisher /  attacker model
+- compute values or derive upper bounds on $adv_D(M,M^*)$ or $P[S_A;A,M]$
+## Security reduction
+A **security reduction** is a particular technique for **security proofs** where the security (*to be proved*) of $M_1$ is derived from another (*assumed or established*) mechanism $M_2$
+
+> [!info] Proposition (general statement)
+> If $M_2$ is secure (*according to some definition*), then $M_1$ is secure (*according to some possibly different definition*)
+
+>[!Success] Proof by contradiction
+>1. Pretend to assume that $M_1$ is **not secure** 
+>2. Then there must be a distinguisher $D_1$ yielding (*cedevole*) high $adv_{D_1}(M_1,M^*_1)$, or (an attack $A_1$ yielding high $P[S_{A_1};A_1,M_1]$ )
+>3. Show that $D_1$ (or $A_1$) can be used to build a $D_2$ yielding high $adv_{D_2}(M_2,M_2^*)$, or (an attack $A_2$ yielding high $P[S_{A_2};A_2,M_2]$)
+>4. Deduce that $M_2$ would not be secure, which contradicts the direct assumption
+>5. Therefore the contradiction assumption must be false, and $M_1$ must be secure
+# Composition of security mechanisms
+More complex security mechanisms or protocols are typically implemented by combining simpler elementary mechanisms 
+![[Screenshot 2026-03-20 alle 16.08.10.png]]
+Now let's consider a security mechanism $S$ that use another mechanism $M$ , and denote this by $S[M]$. Let $S[M^*]$ denote the same mechanism $S$ where $M$ is replaced by its ideal counterpart $M^*$ and let $S^*$ denote the ideal counterpart of $S$ (which need not use $M$ or $M^*$ )
+![[Screenshot 2026-03-20 alle 16.19.54.png]]
+If we know the security level of $M$ and $S[M^*]$, is possible to derive the security of $S[M]$?
+## Composition Lemmas
+>[!info] Lemma: Distinguishability of inner mechanism
+>Consider system $S$ including a subsystem $M$ or $M'$. 
+>Then for any distinguisher $D_S$ on $S$ there exist a distinguisher $D_M$ between $M$ and $M'$ such that $$adv_{D_S}(S[M],S[M']) = adv_{D_M}(M,M')$$
+
+![[Screenshot 2026-03-20 alle 16.25.46.png]]
+>[!info] Lemma: triangular inequality
+>For any systems $S_1,S_2,S_3$ and distinguisher $D$ $$adv_D(S_1,S_2) \leq adv_D(S_1,S_3) + adv_D(S_3,S_2)$$
+>and by taking the supremum over $D$ $$sup_D adv_D (S_1,S_2) \leq sup_{D'}(adv_{D'} (S_1,S_3)+ adv_{D'}(S_3,S_2))$$
+>$$\leq sup_{D'} adv_{D'} (S1,S3) + sup_{D''} adv_{D''} (S_3,S_2)$$
+
+>[!Abstract] Proof
+>Follows from the triangular inequality property of distinguishing advantage
+
+## The composition theorem
+>[!info] Theorem: unconditional
+>If $M$ is $\epsilon_1$-*unconditionally* secure and $S[M^*]$ is $\epsilon_2$-*unconditionally* secure then $S[M]$ is $(\epsilon_1 + \epsilon_2 )$-*unconditionally* secure
+
+>[!Abstract] Proof
+>Follows from the above lemmas: $$sup_{D_S} adv_{D_S} (S[M],S^*) \leq sup_{D_S} adv_{D_S} (S[M],S[M^*]) + sup_{D_S} adv_{D_S} (S[M^*], S^*)$$
+>$$\leq sup_{D_M} adv_{D_M}(M,M^*) + sup_{D_S} adv_{D_S}(S[M^*],S^*) \leq \epsilon_1 + \epsilon_2$$
+By repeatedly applying the above result we can generalize to $N$-*fold* uses of $M$ in $S$
+
+>[!Example] Corollary
+>If $M$ is $\epsilon_1$-*unconditionally secure* and $S[m^*]$ is $\epsilon_2$-*unconditionally secure*, then $S[M^N]$ is $(N \epsilon_1 + \epsilon_2)$-*unconditionally secure*
+>
+
+We can state without proof 
+>[!info] Theorem: unconditional asymptotic
+>In the asymptotic formulation if $\{M_n\}$ is unconditionally secure and $S_n[M^*_n]$ is unconditionally secure then $S_n[M_n]$ is unconditionally secure
+
+>[!info] Theorem: unconditional concrete
+>If $M$ is $(\epsilon_1 , T_0)$-*computationally secure* and $S[M^*]$ is $(\epsilon_2 , T_0)$-*computationally secure* then $S[M]$ is $(\epsilon_1 + \epsilon_2 , T_0)$-*computationally secure*
+
+In the computational asymptotic form security is retained even if $M$ is used in $S$ a number of times that is upper bounded by a polynomial in $n$ as follows
+>[!info] Theorem: computational asymptotic
+>In the asymptotic formulation, if $\{M_n\}$ is computationally secure and $S_n[M^*_n]$ is computationally secure, then for any polynomial $p(\cdot)$, $S_n[M_n^{p(n)}$ is computationally secure
+
+### Relationship between finite unconditional security definitions
+>[!Info] Proposition
+>If a mechanism $M$ is $\delta$-unconditionally secure and its ideal counterpart $M^*$ offers $\epsilon$-unconditional security against a class $\mathcal{A}$ of attacks, then $M$ offers $(\epsilon + \delta )$ -unconditional security against the same class $\mathcal{A}$
+
+>[!Abstract] Proof
+>$$sup_D adv_D (M,M^*) \leq \delta \Rightarrow sup_{p_x}d_V(p_{xy},p_{xy^*}) \leq \delta$$
+>$$\Rightarrow d_V(p_{xy},p_{xy^*}) \leq \delta \space \space, \space \space \forall p_x$$
+>$$\Rightarrow \forall p_x, \exists p_{xyy^*} : P[(x,y) \neq (x,y^*)] = P[y \neq y^*] \leq \delta$$
+>Then for all $A \in \mathcal{A}$ and by the total probability theorem
+>$$P[S_{\mathcal{A}}; A,M] = P[S_{\mathcal{A}} |y = y^*; A,M]P[y = y^*;A,M] + P[S_{\mathcal{A}}|y \neq y^*; A,M]P[y \neq y^*; A,M]$$
+>$$\leq P[S_{\mathcal{A}};A,M^*] \cdot 1 + 1 \cdot P[y \neq y^*; A,M] \leq \epsilon + \delta$$
+
+### Relationship between asymptotic unconditional security definitions
+>[!info] Proposition
+>If a sequence of mechanisms $\{M_n\}$ is unconditionally secure in the asymptotic formulation and its ideal counterparts $\{M_n^*\}$ offer asymptotic unconditionally security against a class $\mathcal{A}$ of attacks, then $\{M_n\}$ also offer asymptotic unconditionally security against the same class $\mathcal{A}$
+
+>[!Abstract] Proof
+>Apply the same reasoning as before to each $M_n,M_n^*,D_n,A_n$ and derive
+>$$P[S_{\mathcal{A}};A_n,M_n] \leq P[S_{\mathcal{A}}; A_n,M^*_n] + sup_{D_n} adv_{D_n} (M_n, M^*_n)$$
+>$$lim_{n \rightarrow \infty} P[S_{\mathcal{A}};A_n,M_n] \leq lim_{n \rightarrow \infty} P[S_{\mathcal{A}};A_n,M^*_n] + lim_{n \rightarrow \infty} sup_{D_n}adv_{D_n}(M_n,;M^*_n) = 0$$
+
+### Relationship between finite unconditional security definitions
