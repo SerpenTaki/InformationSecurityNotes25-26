@@ -341,13 +341,59 @@ In the computational asymptotic form security is retained even if $M$ is used in
 >$$P[S_{\mathcal{A}}; A,M] = P[S_{\mathcal{A}} |y = y^*; A,M]P[y = y^*;A,M] + P[S_{\mathcal{A}}|y \neq y^*; A,M]P[y \neq y^*; A,M]$$
 >$$\leq P[S_{\mathcal{A}};A,M^*] \cdot 1 + 1 \cdot P[y \neq y^*; A,M] \leq \epsilon + \delta$$
 
+> [!example] Proof by contradiction
+> We assume that $M$ cannot offer $(\epsilon+ \delta )$-unconditional security against $\mathcal{A}$, while $M^*$ offers $\epsilon$-unconditional security against the same $\mathcal{A}$, and prove that this implies $M$ is not $\delta$-unconditionally indistinguishable from $M^*$.
+> By the assumption there exist an attack $A_0 \in \mathcal{A}$ such that $P[S_{\mathcal{A}} ; A_0 , M] > \epsilon + \delta$. Using $A_0$ we construct a distinguisher $D_0$ for which we can show that $adv_{D_0}(M, M^*) > \delta$
+> ---
+> In fact $D_0$ will carry out $A_0$ and check if it succeeds. If $A_0$ is successful ($S_{\mathcal{A}}$ happens), $b' =0$ ($\rightarrow$ real mechanism $M$) otherwise, if $A_0$ fail $b = 1$ ($\rightarrow$ ideal counterpart $M^*$). Then
+> $$adv_{D_0} (M,M^*) = | p_{b'|b}(0|0) - p_{b'|b} (0|1)| = |P[S_{\mathcal{A}}; A_0,M] - P[S_{\mathcal{A}};A_0, M^*]| > \epsilon + \delta - \epsilon = \delta$$
+
+![[Screenshot 2026-03-21 alle 18.43.47.png]]
 ### Relationship between asymptotic unconditional security definitions
 >[!info] Proposition
 >If a sequence of mechanisms $\{M_n\}$ is unconditionally secure in the asymptotic formulation and its ideal counterparts $\{M_n^*\}$ offer asymptotic unconditionally security against a class $\mathcal{A}$ of attacks, then $\{M_n\}$ also offer asymptotic unconditionally security against the same class $\mathcal{A}$
 
 >[!Abstract] Proof
->Apply the same reasoning as before to each $M_n,M_n^*,D_n,A_n$ and derive
->$$P[S_{\mathcal{A}};A_n,M_n] \leq P[S_{\mathcal{A}}; A_n,M^*_n] + sup_{D_n} adv_{D_n} (M_n, M^*_n)$$
->$$lim_{n \rightarrow \infty} P[S_{\mathcal{A}};A_n,M_n] \leq lim_{n \rightarrow \infty} P[S_{\mathcal{A}};A_n,M^*_n] + lim_{n \rightarrow \infty} sup_{D_n}adv_{D_n}(M_n,;M^*_n) = 0$$
+>Apply the same reasoning as before to each $M_n, M^*_n,D_n,A_n$ and derive
+>$$P[S_{\mathcal{A}}; A_n, M_n] \leq P[S_{\mathcal{A}};A_n,M^*_n] + sup_{D_n} adv_{D_n}(M_n+M^*_n)$$
+>$$lim_{n \rightarrow \infty} P[S_{\mathcal{A}}; A_n, M_n] \leq lim_{n \rightarrow \infty} P[S_{\mathcal{A}}; A_n, M^*_n] + lim_{n \rightarrow \infty} sup_{D_n} adv_{D_n}(M_n, M^*_n) =0$$
 
-### Relationship between finite unconditional security definitions
+>[!Example] Proof by contradiction
+>Assuming that:
+>- there exist a sequence of attacks $A_n$, and some $\epsilon > 0$ such that $P[S_{\mathcal{A}} ; A_n, M_n] > \epsilon$ for infinitely many $n$
+>- observe that since $lim_{n \rightarrow \infty}P[S_{\mathcal{A}};A_n,M^*_n]=0$ it must be $P[S_{\mathcal{A}};A_n,M^*_n] < \frac{1}{2} \epsilon , \space \forall n > n_{\epsilon}$
+>- build a sequence of distinguishers $D_n$ such that each $D_n$ carries out $A_n$ and checks its success: if $A_n, b'=0$, else $b'=1$
+>so that $adv_{D_n}(M,M^*) > \epsilon - \frac{1}{2} \epsilon = \frac{1}{2} \epsilon$ for infinitely many $n$ *[contradiction]*
+
+### Relationship between finite computational security definitions
+>[!info] Proposition
+>If a mechanism $M$ is $(\delta, T_0)$-computationally secure and its ideal counterpart $M^*$ offers $(\epsilon , T_0)$-computational security against a class $\mathcal{A}$ of attacks, then $M$ offers $(\epsilon + \delta, T_0)$-computational security against the same class $\mathcal{A}$.
+
+>[!Example] Proof by contradiction
+>Assume
+>- there exist an attack $A_0$ such that $P[S_{\mathcal{A}}\cap \{ T_{A_0} \leq T_0\} ; A_0,M]> \epsilon + \delta$
+>- $D_0$ carries out $A_0$ until $T_0$ and checks its success: if $A$ succeeds (Within $T_0$), $b'=0$ else $b'=1$
+>- the time to check success for $A_0$ is negligible wrt $T_0$
+>so that $T_{D_0} \leq T_0$ and $adv_{D_0}(M,M^*) > \delta$  *[contradiction]*
+
+### Relationship between asymptotic computational security definitions
+>[!info] Proposition
+>If a sequence of mechanisms $\{M_n\}$ is computationally secure in the asymptotic formulation and its ideal counterparts $\{M^*_n\}$ offer asymptotic computational security against a class $\mathcal{A}$ of attacks then $\{M_n\}$ also offer asymptotic computational security against the same class $\mathcal{A}$
+
+>[!Example] Proof by contradiction
+>Assume
+>- there exist a sequence of attacks $A_n$, and polynomials $q(\cdot), s(\cdot)$ such that $P[S_{\mathcal{A}} \cap \{T_{A_n} \leq q(n)\}; A_n, M_n] > \frac{1}{2(n)}$ for *infinitely many* $n$
+>- observe that it must be $P[S_{\mathcal{A}} \cap \{T_{A_n} \leq q(n)\}; A_n, M^*_n] < \frac{1}{2s(n)}, \forall n > n_{q,s}$
+>- build a sequence of distinguishers $D_n$, such that each $D_n$ carries out $A_n$ until $T_{A_n} \leq q(n)$ and check its success: if $A_n$ succeeds (within $q(n)$) $b'=0$, else $b'=1$
+>- the time to check success for $A_n$ is negligible wrt $q(n)$
+>so that
+>$T_{D_n} \leq q(n)$ and $adv_{D_n}(M,M^*) > \frac{1}{s(n)} - \frac{1}{2s(n)}$ for infinitely many $n$
+
+# Relationship between security definitions
+The security definition based on distinguishability is actually stronger than that based on attack success probability
+>[!info] Proposition
+>There are mechanisms $M$ that offer arbitrarily low success probability against a wide class of attacks, yet are not closely indistinguishable from their ideal counterpart
+
+>[!Example] Proof by Example
+>Consider a 
+
