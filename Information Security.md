@@ -395,5 +395,18 @@ The security definition based on distinguishability is actually stronger than th
 >There are mechanisms $M$ that offer arbitrarily low success probability against a wide class of attacks, yet are not closely indistinguishable from their ideal counterpart
 
 >[!Example] Proof by Example
->Consider a 
+>Consider a key generation mechanism $M$ that outputs a $2n$-bit key where the first $n$ bits are deterministic and only the last $n$ bits are uniform.
+>Then the success probability for any attack $A$ aiming to guess the key is $P[S_{\mathcal{A}}; A, M] \leq 1/2^n$ (asymptotic security).
+>The ideal counterpart $M^*$ is a key generation mechanism that outputs a perfectly uniform $2n$-bit key $k^* \sim \mathcal{U}(\mathcal{K})$ with $\mathcal{K} = \{0,1\}^{2n}$ while $M$ outputs $k \sim \mathcal{U}(\mathcal{K}')$, with $\mathcal{K}' \in \mathcal{K}$ and $|\mathcal{K}'| = 2^n$
+>Therefore based on total variation distance
+>$$adv(M,M^*) = d_V(k,k^*) = |P[k \in \mathcal{K}']-P[k^* \in \mathcal{K}']| = \sum_{a \in \mathcal{K}'} p_k(a) - p_{k^*}(a)$$
+>$$= \sum_{a \in \mathcal{K}'} (\frac{1}{|\mathcal{K}'|} - \frac{1}{|\mathcal{K}|})= |\mathcal{K}'|(\frac{1}{|\mathcal{K}'|} - \frac{1}{|\mathcal{K}|})= 2^n (\frac{1}{2^n}-\frac{1}{2^{2n}}) = 1 - \frac{1}{2^n}$$
+>So $M$ is not asymptotically unconditionally secure $n \rightarrow \infty$ 
 
+
+|                                  |            | **Unconditional**                                                                                 | **Computational**                                                                                                                                            |
+| -------------------------------- | ---------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **distinguisher based** (strong) | finite     | $\forall D$ distinguisher $$adv_D(M,M^*) \leq \epsilon$$                                          | $\forall D$ distinguisher $$adv_D(M,M^*) \leq \epsilon$$                                                                                                     |
+| **distinguisher based** (strong) | asymptotic | $\forall \{D_n\}$ distinguisher $$lim_{n \rightarrow \infty} adv_{D_n}(M_n, M^*_n) = 0$$          | $\forall q(\cdot), s(\cdot)$ polynomials $\forall \{D_n\}: T_{D_n} \leq q(n)$ $$lim_{n \rightarrow \infty} s(n) adv_{D_n} (M_n,M^*_n) = 0$$                  |
+| **attack class based** (weak)    | finite     | $\forall A \in \mathcal{A}$ $$P[S_{\mathcal{A}}; A,M] \leq \epsilon$$                             | $\forall A \in \mathcal{A}$ $$P[S_{\mathcal{A}} \cap \{T_A \leq T_0\} ; A, M] \leq \epsilon$$                                                                |
+| **attack class based** (weak)    | asymptotic | $\forall \{A_n \in \mathcal{A}\}$ $$lim_{n \rightarrow \infty} P[S_{\mathcal{A}}; A_n, M_n] = 0$$ | $\forall \{A_n \in \mathcal{A}\} , \forall q(\cdot), s(\cdot), \forall n > n_0$ $$P[S_{\mathcal{A}} \cap \{T_{A_n} \leq q(n)\}; A_n, M_n] < \frac{1}{s(n)}$$ |
