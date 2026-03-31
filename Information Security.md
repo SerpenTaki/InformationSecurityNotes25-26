@@ -410,3 +410,46 @@ The security definition based on distinguishability is actually stronger than th
 | **distinguisher based** (strong) | asymptotic | $\forall \{D_n\}$ distinguisher $$lim_{n \rightarrow \infty} adv_{D_n}(M_n, M^*_n) = 0$$          | $\forall q(\cdot), s(\cdot)$ polynomials $\forall \{D_n\}: T_{D_n} \leq q(n)$ $$lim_{n \rightarrow \infty} s(n) adv_{D_n} (M_n,M^*_n) = 0$$                  |
 | **attack class based** (weak)    | finite     | $\forall A \in \mathcal{A}$ $$P[S_{\mathcal{A}}; A,M] \leq \epsilon$$                             | $\forall A \in \mathcal{A}$ $$P[S_{\mathcal{A}} \cap \{T_A \leq T_0\} ; A, M] \leq \epsilon$$                                                                |
 | **attack class based** (weak)    | asymptotic | $\forall \{A_n \in \mathcal{A}\}$ $$lim_{n \rightarrow \infty} P[S_{\mathcal{A}}; A_n, M_n] = 0$$ | $\forall \{A_n \in \mathcal{A}\} , \forall q(\cdot), s(\cdot), \forall n > n_0$ $$P[S_{\mathcal{A}} \cap \{T_{A_n} \leq q(n)\}; A_n, M_n] < \frac{1}{s(n)}$$ |
+# Symmetric encryption and perfect secrecy
+![[Screenshot 2026-03-31 alle 19.07.44.png]]
+## Notation
+- **Secret message** (*plaintext*) $u \in \mathcal{M}$ message space
+- **Transmitted message** (*cyberspace*) $x \in \mathcal{X}$ cipher space
+- **Encryption** (*key*) $k \in \mathcal{K}$ key space
+- **Encryption map**: $E : \mathcal{K} \times \mathcal{M} \rightarrow \mathcal{X}$ $$E_k : \mathcal{M}\rightarrow \mathcal{X} \space \space E_k(u) = E(k,u)$$
+- **Decryption map**: $D: \mathcal{K} \times \mathcal{X} \rightarrow \mathcal{M}$ $$D_k:\mathcal{X} \rightarrow \mathcal{M} D_k(x) = D(k,x)$$
+Key and plaintext are random with probability mass distribution
+- Key pmd $p_k : \mathcal{K} \rightarrow [0,1]$ typically uniform: $k \sim \mathcal{U}(\mathcal{K})$ 
+- plaintext pmd $p_u: \mathcal{M} \rightarrow [0,1]$ not necessarily uniform
+The encryption system is *completely specified* as $\mathcal{S} = (\mathcal{M}, \mathcal{X}, \mathcal{K}, \mathcal{E}, \mathcal{D}, p_u, p_k)$
+## General assumption
+- (**_perfect reliability_**) The receiver must be able to recover the secret message perfectly $$D_k = E^{-1}_k \space \space \space \space \forall k\in \mathcal{K}$$
+- (**_Kerchoff's assumption_**) The eavesdropper knows the system $\mathcal{S}$ (in particular the maps $E(\cdot , \cdot)$ and $D(\cdot , \cdot)$)
+
+>[!Danger] Where does secrecy come from?
+>Secrecy is only based on the fact that the eavesdropper does not know the actual realization of $k$ and hence the particular $E_k(\cdot), D_k(\cdot)$ used
+
+>[!Example] Substitution cipher
+>$$\mathcal{M} = \bigcup_{\mathcal{l}\in\mathcal{L}} \mathcal{A}^\mathcal{l}_u = \mathcal{A}_u^* \space \space , \space \space \mathcal{X} = \mathcal{A}^*_x$$
+>$$E_k : [x_1,...,x_\mathcal{l}] = [e_k(u_1),....,e_k(u_\mathcal{l})]$$ with $e_k : \mathcal{A}_u \rightarrow \mathcal{A}_x$ **_injective_**
+>Provided $|\mathcal{A}_u| \leq |\mathcal{A}_x|$, the class $\{e_k\}$ of all injective functions $\mathcal{A}_u \rightarrow \mathcal{A}_x$ has cardinality
+>$$K = \prod^{|\mathcal{A}_u|}_{i = 1} (|A_x| -i +1)= \frac{|\mathcal{A}_x|!}{(|\mathcal{A}_x|-|\mathcal{A}_u|)!}$$
+>We can take $\mathcal{K} = \{1,....,K\}$ if $|\mathcal{A}_u | = |\mathcal{A}_x| = M$ then $K= M!$
+## The guessing attack
+In this attack, $E$ wants to learn the value of $u$ and attempts a guess $u' \in \mathcal{M}$ 
+### Ignorant guess
+
+By ignoring the reading of $x$, the optimal guess for $E$ is $$u' = argmax_{a \in\mathcal{M}} \space p_u(a)$$
+and the corresponding success probability is $$P[u' = u] = p_u(u') = max_{a \in \mathcal{M}} \space p_u(a) = P_g(u)$$
+which is also called the **_guessing probability_** for rv $u$
+### Informed guess
+By making use of her knowledge of $x$ the optimal guess for $E$ is a function of $x$ $$u'=g(x)$$ with $$g : \mathcal{X} \rightarrow \mathcal{M} \space, \space g(b) = \space arg \space max_{a \in \mathcal{M}} \space p_{u|x} (a|b)$$ and the corresponding success probability is $$P[u'=u] = P[g(x) = u]= \sum_{b \in \mathcal{X}}P[g(x)=u| x=b]p_x(b)$$
+$$\sum_{b \in \mathcal{X}} p_{u|x} (g(b)|b)p_x(b)= \sum_{b\in \mathcal{X}}p_x(b) max_{a \in \mathcal{M}} p_{u|x}(a|b) = P_g(u|x)$$ called __*conditional guessing probability*__.
+In general, it is not lower than the ignorant guess, as $$P_g (u|x) = \sum_{b \in \mathcal{X}} p_x(b) max_{a \in \mathcal{M}}\space p_{u|x}(a|b) \geq max_{a \in \mathcal{M}} \sum_{b \in \mathcal{X}} p_x(b)p_{u|x}(a|b) = max_{a \in \mathcal{M}} p_u(a) = P_g(u)$$
+#### About what the eaves dropper know
+In the formulation of guessing attacks we assume that the attacker $E$ knows the plaintext PMD $p_u(\cdot)$ (*ignorant guess*) or the conditional PMD $p_{u|x}(\cdot | \cdot)$ (*for the informed guess*).
+- **plaintext PMD** the fact that $E$ knows $p_u(\cdot)$ is included in the Kerchoff's assumption
+- **conditional PMD** by definition $p_{u|x} (\cdot | \cdot)$ can be computed as $p_{u|x}(a|b)= p_{ux}(a,b)/p_x(b)$
+- **joint PMD** $p_{ux}(a,b)$ can be computed, starting from the set $\mathcal{K}_{a\rightarrow b}$ of the key values that encrypt $a$ to $b$ , $\mathcal{K}_{a \rightarrow b} = \{c \in \mathcal{K} : E(c,a) = b\}$ in turn derived from knowledge of $E(\cdot, \cdot)$. $$p_{ux}(a,b) = P[u = a, x = b] = P [u = a, E(k,a) = b] = P [u=a, k \in \mathcal{K}_{a \rightarrow b}]$$ and by exploiting the independence between $u$ and $k$ $$p_{ux}(a,b) = P[u=a]P[k \in \mathcal{K}_{a \rightarrow b}] = p_u(a) \sum_{c \in \mathcal{K}_{a \rightarrow b}} p_k(c)$$
+- **ciphertext PMD** is found from the marginal condition $p_x(b) = \sum_{a \in \mathcal{M}} p_{ux} (a,b)$
+### Sequential guessing
